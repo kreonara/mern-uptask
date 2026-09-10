@@ -1,12 +1,10 @@
 import { Router } from "express";
-import { body } from 'express-validator';
+import { body, param } from 'express-validator';
 import { ProjectController } from "../controllers/ProjectController";
 import { handleInputErrors } from "../middlewares/validation";
 
 
 const router = Router()
-
-router.get('/', ProjectController.getAllProjects)
 
 router.post('/',
   body('projectName')
@@ -17,6 +15,26 @@ router.post('/',
     .notEmpty().withMessage('La Descripción del Proyecto es Obligatoria'),
   handleInputErrors,
   ProjectController.createProject
+)
+
+router.get('/', ProjectController.getAllProjects)
+
+router.get('/:id',
+  param('id').isMongoId().withMessage('ID no válido'),
+  handleInputErrors,
+  ProjectController.getProjectById
+)
+
+router.put('/:id',
+  param('id').isMongoId().withMessage('ID no válido'),
+  body('projectName')
+    .notEmpty().withMessage('El Nombre del Proyecto es Obligatorio'),
+  body('clientName')
+    .notEmpty().withMessage('El Nombre del Cliente es Obligatorio'),
+  body('description')
+    .notEmpty().withMessage('La Descripción del Proyecto es Obligatoria'),
+  handleInputErrors,
+  ProjectController.updateProject
 )
 
 export default router

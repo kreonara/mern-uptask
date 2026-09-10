@@ -3,10 +3,6 @@ import Project from '../models/Project';
 
 export class ProjectController {
 
-  static getAllProjects(req: Request, res: Response) {
-    res.send('Todos los Projectos')
-  }
-  
   static createProject = async(req: Request, res: Response) => {
     console.log(req.body)
     const project = new Project(req.body)
@@ -15,6 +11,49 @@ export class ProjectController {
       // await Project.create(req.body) // guardar
       await project.save() // guardar
       res.send('Creando Projecto...')
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  static getAllProjects = async(req: Request, res: Response) => {
+    try {
+      const projects = await Project.find()
+      res.json(projects)
+    } catch (error) {
+      console.log(error)
+    }
+    res.send('Todos los Projectos')
+  }
+  
+  static getProjectById = async(req: Request, res: Response) => {
+    const { id } = req.params
+
+    try {
+      const project = await Project.findById(id)
+      if(!project) {
+        const error = new Error('Proyecto no encontrado')
+        return res.status(404).json({error: error.message})
+      }
+      
+      res.json(project)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+  
+  static updateProject = async(req: Request, res: Response) => {
+    const { id } = req.params
+
+    try {
+      const project = await Project.findByIdAndUpdate(id, req.body)
+      if(!project) {
+        const error = new Error('Proyecto no encontrado')
+        return res.status(404).json({error: error.message})
+      }
+
+      await project.save()
+      res.send('Proyecto Actualizado')
     } catch (error) {
       console.log(error)
     }

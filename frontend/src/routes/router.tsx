@@ -1,9 +1,9 @@
-// import { lazy } from 'react'
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router'
 import AppLayout from '../layouts/AppLayout'
 import DashboardView from '../views/DashboardView';
 
-// const DashboardView = lazy(() => import('../views/DashboardView'))
+const CreateProjectView = lazy(() => import('../views/projects/CreateProjectView'))
 
 export const appRouter = createBrowserRouter([
   {
@@ -13,7 +13,11 @@ export const appRouter = createBrowserRouter([
       {
         index: true,
         Component: DashboardView,
-      }
+      },
+      {
+        path: 'projects/create',
+        Component: CreateProjectView,
+      },
     ]
   }
 ])

@@ -1,13 +1,18 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import cors from 'cors'
 import { connectDB } from './config/db'
 import projectRoutes from './routes/projectRoutes'
+import { corsConfig } from './config/cors'
 
 dotenv.config()
 
 connectDB()
 
 const app = express()
+
+// permitir las conexiones de CORS
+app.use(cors(corsConfig))
 
 // Habilitar lectura de archivos JSON (req.body)
 app.use(express.json())

@@ -4,13 +4,13 @@ import Project from '../models/Project';
 export class ProjectController {
 
   static createProject = async(req: Request, res: Response) => {
-    console.log(req.body)
+    // console.log(req.body) // datos desde el formulario
     const project = new Project(req.body)
 
     try {
       // await Project.create(req.body) // guardar
       await project.save() // guardar
-      res.send('Creando Projecto...')
+      res.send('Proyecto Creado Correctamente')
     } catch (error) {
       console.log(error)
     }

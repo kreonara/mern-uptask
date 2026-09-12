@@ -16,6 +16,7 @@ const taskStatus = { // estado de cada tarea
   COMPLETED: 'completed' // completada
 } as const
 
+// export type TaskStatus = 'pending' | 'onHold' | 'inProgress' | 'underReview' | 'completed'
 export type TaskStatus = typeof taskStatus[keyof typeof taskStatus]
 
 export interface ITask extends Document {

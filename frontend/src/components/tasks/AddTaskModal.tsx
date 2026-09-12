@@ -1,13 +1,51 @@
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from "@headlessui/react"
-import { useLocation, useNavigate } from "react-router"
+import { useLocation, useNavigate, useParams } from "react-router"
 import { Fragment } from "react/jsx-runtime"
+import TaskForm from "./TaskForm"
+import type { TaskFormData } from "../../types"
+import { useForm } from "react-hook-form"
+import { useMutation } from "@tanstack/react-query"
+import { createTask } from "../../api/TaskAPI"
+import { toast } from "react-toastify"
 
 const AddTaskModal = () => {
   const navigate = useNavigate() // modificar la URL
+
+  /** Leer si modal existe */
   const location = useLocation() // verificar/leer URL
   const queryParams = new URLSearchParams(location.search) // search tiene los query parametros
   const modalTask = queryParams.get('newTask') // verificamos si existe 'newTask'
   const show = modalTask ? true : false // existe ? true : false
+
+  /** Obtener ProjectId */
+  const params = useParams()
+  const projectId = params.projectId!
+
+  const initialValues: TaskFormData = {
+    name: '',
+    description: ''
+  }
+
+  const { register, handleSubmit, reset, formState: { errors} } = useForm({
+    defaultValues: initialValues
+  })
+
+  const mutation = useMutation({
+    mutationFn: createTask,
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: (data) => {
+      toast.success(data)
+      reset() // borrar formulario
+      navigate(location.pathname, {replace: true}) // ocultar modal
+    }
+  })
+
+  const handleCreateTask = (formData: TaskFormData) => {
+    const data = {formData, projectId}
+    mutation.mutate(data)
+  }
 
   return (
     <Transition appear show={show} as={Fragment}>
@@ -47,6 +85,24 @@ const AddTaskModal = () => {
                 <p className="text-xl font-bold">Llena el formulario y crea  {''}
                   <span className="text-fuchsia-600">una tarea</span>
                 </p>
+
+                <form
+                  className="mt-10 space-y-3"
+                  noValidate
+                  onSubmit={handleSubmit(handleCreateTask)}
+                >
+                  
+                  <TaskForm 
+                    register={register}
+                    errors={errors}
+                  />
+
+                  <input 
+                    type="submit"
+                    value="Guardar Tarea"
+                    className="bg-fuchsia-600 hover:bg-fuchsia-700 p-3 w-full text-white uppercase font-bold cursor-pointer transition-colors"
+                  />
+                </form>
 
               </DialogPanel>
             </TransitionChild>

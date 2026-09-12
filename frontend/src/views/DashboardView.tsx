@@ -2,13 +2,28 @@ import { Fragment } from 'react'
 import { Menu, MenuButton, MenuItem, MenuItems, Transition } from '@headlessui/react'
 import { EllipsisVerticalIcon } from '@heroicons/react/20/solid'
 import { Link } from "react-router"
-import { useQuery } from '@tanstack/react-query'
-import { getProjects } from "../api/ProjectAPI"
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { deleteProject, getProjects } from "../api/ProjectAPI"
+import { toast } from 'react-toastify'
 
 const DashboardView = () => {
   const { data, isLoading } = useQuery({
     queryKey: ['projects'],
-    queryFn: getProjects
+    queryFn: getProjects,
+    // staleTime: 1000 * 60 * 5, // 5 minutos
+    // staleTime: 10_000, // 10 segundos
+  })
+
+  const queryClient = useQueryClient()
+  const mutation = useMutation({
+    mutationFn: deleteProject,
+    onError: (error) => {
+      toast.error(error.message)
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({queryKey: ['projects']})
+      toast.success(data)
+    }
   })
 
   if (isLoading) return 'Cargando...'
@@ -66,7 +81,7 @@ const DashboardView = () => {
                               </Link>
                             </MenuItem>
                             <MenuItem>
-                              <Link to={``}
+                              <Link to={`/projects/${project._id}/edit`}
                                 className='block px-3 py-1 text-sm leading-6 text-gray-900'>
                                 Editar Proyecto
                               </Link>
@@ -75,7 +90,7 @@ const DashboardView = () => {
                               <button
                                 type='button'
                                 className='block px-3 py-1 text-sm leading-6 text-red-500'
-                                onClick={() => { }}
+                                onClick={() => mutation.mutate(project._id)}
                               >
                                 Eliminar Proyecto
                               </button>

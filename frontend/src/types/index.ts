@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-// Tipo de dato para los Projects
+/** Tipo de dato para los Projects */
 export const projectSchema = z.object({
   _id: z.string(),
   projectName: z.string(),
@@ -11,3 +11,13 @@ export const projectSchema = z.object({
 export type Project = z.infer<typeof projectSchema>
 // seleccionamos que llaves vamos a usar - Pick | Omit - Omitir keys
 export type ProjectFormData = Pick<Project, 'clientName' | 'projectName'| 'description'>
+
+
+export const dashboardProjectSchema = z.array(
+  projectSchema.pick({ // que valores necesitamos de projectSchema?
+    _id: true,
+    projectName: true,
+    clientName: true,
+    description: true
+  })
+)

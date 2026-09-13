@@ -4,7 +4,7 @@ import { Fragment } from "react/jsx-runtime"
 import TaskForm from "./TaskForm"
 import type { TaskFormData } from "../../types"
 import { useForm } from "react-hook-form"
-import { useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createTask } from "../../api/TaskAPI"
 import { toast } from "react-toastify"
 
@@ -30,12 +30,14 @@ const AddTaskModal = () => {
     defaultValues: initialValues
   })
 
+  const queryClient = useQueryClient()
   const mutation = useMutation({
     mutationFn: createTask,
     onError: (error) => {
       toast.error(error.message)
     },
     onSuccess: (data) => {
+      queryClient.invalidateQueries({queryKey: ['editProject', projectId]})
       toast.success(data)
       reset() // borrar formulario
       navigate(location.pathname, {replace: true}) // ocultar modal

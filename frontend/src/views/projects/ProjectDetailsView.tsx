@@ -10,7 +10,7 @@ const ProjectDetailsView = () => {
   const projectId = params.projectId!
 
   const { data, isLoading, isError } = useQuery({
-    queryKey: [''],
+    queryKey: ['editProject', projectId],
     queryFn: () => getProjectById(projectId)
   })
 
